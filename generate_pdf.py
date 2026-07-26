@@ -293,5 +293,5 @@ def build_pdf():
     print(f"[PDF] Report saved to: {OUTPUT_PDF}")
 
 
-# if __name__ == "__main__":
-#     build_pdf()
+if __name__ == "__main__":
+    build_pdf()
