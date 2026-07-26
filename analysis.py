@@ -427,51 +427,37 @@ with **{insights['top_price_driver']}** emerging as the strongest price driver
 *Report generated automatically by analysis.py — Personal Finance & Data
 Analytics Toolkit by Vishal Arya, Servana Tech.*
 """
-
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write(report)
 
     print(f"\n[REPORT] Markdown report saved to: {REPORT_PATH}")
-
-
-# ================================================================
-# MAIN PIPELINE
-# ================================================================
 
 def main():
     print("=" * 65)
     print("  HOUSE PRICE ANALYSIS — Starting Pipeline")
     print("=" * 65)
 
-    # 1. Load
     df_raw = load_data()
 
-    # 2. Clean
     df = clean_data(df_raw)
 
-    # 3. Statistics
     stats_df = compute_statistics(df)
     corr = compute_correlation(df)
 
-    # 4. Group analysis
     location_summary = analyze_location(df)
     type_summary = analyze_property_type(df)
     bedroom_summary = analyze_bedroom_impact(df)
 
-    # 5. Visualizations
     generate_all_visuals(df, corr)
 
-    # 6. Insights
     insights = generate_insights(df, corr, location_summary, type_summary)
 
-    # 7. Report
     generate_report(df, stats_df, corr, location_summary,
                      type_summary, bedroom_summary, insights)
 
     print("\n" + "=" * 65)
     print("  PIPELINE COMPLETE — All outputs saved to 'visuals/' and 'report.md'")
     print("=" * 65)
-
 
 if __name__ == "__main__":
     main()
