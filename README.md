@@ -1,13 +1,7 @@
 ## 1. Executive Summary
 
-This report analyzes a dataset of **300 residential properties**
-to identify the key factors driving house prices, compare value across
-locations and property types, and provide actionable recommendations for
-buyers, sellers, and investors.
-
-The average property price in this dataset is **₹24,883,658**,
-with **Area** emerging as the strongest price driver
-(correlation = 0.80).
+This report analyzes **300 residential properties** to identify the key factors affecting house prices and provides insights for buyers, sellers, and investors.
+The analysis shows that **property area is the strongest predictor of price**, while location significantly influences market value.
 
 ## 2. Dataset Overview
 
@@ -87,20 +81,11 @@ with **Area** emerging as the strongest price driver
 
 ## 9. Key Findings
 
-1. **Area** has the strongest positive relationship
-   with price (correlation = 0.80), making it
-   the single most important factor in price determination.
-2. **Age** shows the weakest relationship with price
-   (correlation = -0.13), suggesting it plays a
-   minor role compared to other features.
-3. **City Center** is the most valuable location with
-   an average price of ₹33,149,794, while
-   **Rural** has the lowest average price.
-4. **Apartment** properties command the highest average
-   price at ₹27,124,203.
-5. The average price per square foot across the dataset is
-   ₹9,542.84, with **Rural**
-   offering the best value per square foot.
+1. Property area has the strongest influence on house prices.
+2. City Center properties have the highest average selling price.
+3. Apartments have the highest average price among all property types.
+4. Rural properties offer the lowest average price per square foot.
+5. Property age has only a weak relationship with price.
 
 ## 10. Business Insights
 
@@ -129,7 +114,4 @@ with **Area** emerging as the strongest price driver
   depreciation trend observed in the data.
 
 ### For Buyers
-- Compare **Price_per_sqft** across locations rather than absolute price
-  alone — it provides a fairer basis for comparing value.
-*Report generated automatically by analysis.py — Personal Finance & Data
-Analytics Toolkit by Vishal Arya, Servana Tech.*
+- Report generated automatically by analysis.py — House Price Analysis & Visualization Project by Vishal Arya.
