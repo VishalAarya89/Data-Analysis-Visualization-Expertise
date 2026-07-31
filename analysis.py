@@ -8,12 +8,12 @@ sns.set_style("whitegrid")
 plt.rcParams["figure.dpi"] = 110
 plt.rcParams["font.size"] = 10
 
-DATA_PATH    = "house_prices.csv"
-VISUALS_DIR  = "visuals"
-REPORT_PATH  = "report.md"
+DATA_PATH = "house_prices.csv"
+VISUALS_DIR = "visuals"
+REPORT_PATH = "report.md"
 
-PALETTE       = ["#2E5EAA", "#5DA9E9", "#F2A65A", "#E76F51", "#43AA8B"]
-ACCENT_COLOR  = "#2E5EAA"
+PALETTE = ["#2E5EAA", "#5DA9E9", "#F2A65A", "#E76F51", "#43AA8B"]
+ACCENT_COLOR = "#2E5EAA"
 
 os.makedirs(VISUALS_DIR, exist_ok=True)
 def load_data(path: str = DATA_PATH) -> pd.DataFrame:
@@ -196,7 +196,6 @@ def plot_feature_importance(corr: pd.DataFrame) -> None:
     plt.close()
     print(f"[SAVED] {VISUALS_DIR}/05_feature_importance.png")
 
-
 def plot_avg_price_by_bedrooms(df: pd.DataFrame) -> None:
     summary = df.groupby("Bedrooms")["Price"].mean().round(0)
 
@@ -294,15 +293,12 @@ def generate_insights(df: pd.DataFrame, corr: pd.DataFrame,
 
 def generate_report(df, stats_df, corr, location_summary,
                      type_summary, bedroom_summary, insights) -> None:
-    report = f"""# 🏠 House Price Analysis — Report
-
-**Author:** Vishal Arya | Full Stack Developer & Data Analyst | Servana Tech
-**GitHub:** [VishalAarya89](https://github.com/VishalAarya89)
+    report = 
+                         f"""# 🏠 House Price Analysis — Report
 
 ---
 
 ## 1. Executive Summary
-
 This report analyzes a dataset of **{insights['total_properties']} residential properties**
 to identify the key factors driving house prices, compare value across
 locations and property types, and provide actionable recommendations for
@@ -311,11 +307,8 @@ buyers, sellers, and investors.
 The average property price in this dataset is **₹{insights['overall_avg_price']:,.0f}**,
 with **{insights['top_price_driver']}** emerging as the strongest price driver
 (correlation = {insights['top_price_driver_val']:.2f}).
-
 ---
-
 ## 2. Dataset Overview
-
 | Property | Value |
 |---|---|
 | Total Records | {len(df)} |
@@ -324,55 +317,32 @@ with **{insights['top_price_driver']}** emerging as the strongest price driver
 | Property Types | {", ".join(df['Property_Type'].unique())} |
 | Price Range | ₹{df['Price'].min():,.0f} – ₹{df['Price'].max():,.0f} |
 | Area Range | {df['Area'].min():,.0f} – {df['Area'].max():,.0f} sq.ft |
-
 ---
-
 ## 3. Data Cleaning Summary
-
 - Checked for and removed duplicate records
 - Verified no missing values across all columns
 - Validated all Price and Area values are positive
 - Standardized text fields (Location, Property_Type)
 - Engineered new feature: **Price_per_sqft** for value comparison
-
 ---
-
 ## 4. Statistical Summary
-
 {stats_df.to_markdown()}
-
 ---
-
 ## 5. Correlation Analysis
-
 {corr.to_markdown()}
-
 **Correlation with Price (ranked):**
-
 {corr['Price'].drop('Price').sort_values(ascending=False).to_markdown()}
-
 ---
-
 ## 6. Location-Based Analysis
-
 {location_summary.to_markdown()}
-
 ---
-
 ## 7. Property Type Analysis
-
 {type_summary.to_markdown()}
-
 ---
-
 ## 8. Bedroom Impact Analysis
-
 {bedroom_summary.to_markdown()}
-
 ---
-
 ## 9. Key Findings
-
 1. **{insights['top_price_driver']}** has the strongest positive relationship
    with price (correlation = {insights['top_price_driver_val']:.2f}), making it
    the single most important factor in price determination.
@@ -387,11 +357,8 @@ with **{insights['top_price_driver']}** emerging as the strongest price driver
 5. The average price per square foot across the dataset is
    ₹{insights['avg_price_per_sqft']:,.2f}, with **{insights['cheapest_location_per_sqft']}**
    offering the best value per square foot.
-
 ---
-
 ## 10. Business Insights
-
 - **Key Price Drivers:** {insights['top_price_driver']} is by far the dominant
   driver of price in this dataset, while features like Bathrooms and Age show
   little to no positive relationship with price.
@@ -399,11 +366,8 @@ with **{insights['top_price_driver']}** emerging as the strongest price driver
   (City Center) command significantly higher prices per square foot.
 - **High-Demand Areas:** City Center properties have the highest average
   price, indicating strong demand and limited supply in central locations.
-
 ---
-
 ## 11. Recommendations
-
 ### For Investors
 - Prioritize properties in **{insights['most_valuable_location']}** for
   long-term appreciation, but evaluate **{insights['cheapest_location_per_sqft']}**
@@ -417,13 +381,10 @@ with **{insights['top_price_driver']}** emerging as the strongest price driver
   bathroom count alone.
 - Older properties should be priced competitively to offset the age-related
   depreciation trend observed in the data.
-
 ### For Buyers
 - Compare **Price_per_sqft** across locations rather than absolute price
   alone — it provides a fairer basis for comparing value.
-
 ---
-
 *Report generated automatically by analysis.py — Personal Finance & Data
 Analytics Toolkit by Vishal Arya, Servana Tech.*
 """
