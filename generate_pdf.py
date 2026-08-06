@@ -9,11 +9,7 @@ from reportlab.platypus import (
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
-from analysis import (
-    load_data, clean_data, compute_statistics, compute_correlation,
-    analyze_location, analyze_property_type, analyze_bedroom_impact,
-    generate_insights, VISUALS_DIR
-)
+from analysis import run_analysis, VISUALS_DIR
 
 OUTPUT_PDF = "report.pdf"
 
@@ -68,14 +64,7 @@ def df_to_table(df: pd.DataFrame, col_widths=None, font_size=8) -> Table:
 
 def build_pdf():
     print("[PDF] Loading data and running analysis pipeline...")
-    df_raw = load_data()
-    df = clean_data(df_raw)
-    stats_df = compute_statistics(df)
-    corr = compute_correlation(df)
-    location_summary = analyze_location(df)
-    type_summary = analyze_property_type(df)
-    bedroom_summary = analyze_bedroom_impact(df)
-    insights = generate_insights(df, corr, location_summary, type_summary)
+    df, stats_df, corr, location_summary, type_summary, bedroom_summary, insights = run_analysis(generate_visuals=True)
 
     doc = SimpleDocTemplate(
         OUTPUT_PDF, pagesize=A4,
