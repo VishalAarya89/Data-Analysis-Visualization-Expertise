@@ -16,6 +16,30 @@ PALETTE = ["#2E5EAA", "#5DA9E9", "#F2A65A", "#E76F51", "#43AA8B"]
 ACCENT_COLOR = "#2E5EAA"
 
 os.makedirs(VISUALS_DIR, exist_ok=True)
+
+NUMERIC_FEATURES = ["Area", "Bedrooms", "Bathrooms", "Age", "Price", "Price_per_sqft"]
+CORRELATION_FEATURES = ["Area", "Bedrooms", "Bathrooms", "Age", "Price"]
+
+
+def save_plot(filename: str) -> None:
+    plt.tight_layout()
+    output_path = os.path.join(VISUALS_DIR, filename)
+    plt.savefig(output_path)
+    plt.close()
+    print(f"[SAVED] {output_path}")
+
+
+def add_linear_trend(x: pd.Series, y: pd.Series, color: str = "black") -> None:
+    z = np.polyfit(x, y, 1)
+    p = np.poly1d(z)
+    x_line = np.linspace(x.min(), x.max(), 100)
+    plt.plot(x_line, p(x_line), color=color, linestyle="--", linewidth=1.5, label="Trend Line")
+
+
+def get_price_correlations(corr: pd.DataFrame) -> pd.Series:
+    return corr["Price"].drop("Price").sort_values(ascending=False)
+
+
 def load_data(path: str = DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
     print(f"[LOAD] Dataset loaded: {df.shape[0]} rows, {df.shape[1]} columns")
@@ -49,7 +73,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def compute_statistics(df: pd.DataFrame) -> pd.DataFrame:
-    numeric_cols = ["Area", "Bedrooms", "Bathrooms", "Age", "Price", "Price_per_sqft"]
+    numeric_cols = NUMERIC_FEATURES
     stats = {}
 
     for col in numeric_cols:
@@ -69,14 +93,14 @@ def compute_statistics(df: pd.DataFrame) -> pd.DataFrame:
     return stats_df
 
 def compute_correlation(df: pd.DataFrame) -> pd.DataFrame:
-    numeric_cols = ["Area", "Bedrooms", "Bathrooms", "Age", "Price"]
+    numeric_cols = CORRELATION_FEATURES
     corr = df[numeric_cols].corr().round(3)
 
     print("\n[CORRELATION] Correlation Matrix")
     print(corr.to_string())
 
     print("\n[CORRELATION] Correlation with Price (sorted):")
-    price_corr = corr["Price"].drop("Price").sort_values(ascending=False)
+    price_corr = get_price_correlations(corr)
     print(price_corr.to_string())
 
     return corr
@@ -123,10 +147,7 @@ def plot_correlation_heatmap(corr: pd.DataFrame) -> None:
         center=0, linewidths=0.5, square=True, cbar_kws={"shrink": 0.8}
     )
     plt.title("Correlation Heatmap — Property Features vs Price", fontsize=12, fontweight="bold")
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/01_correlation_heatmap.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/01_correlation_heatmap.png")
+    save_plot("01_correlation_heatmap.png")
 
 def plot_price_distribution(df: pd.DataFrame) -> None:
     plt.figure(figsize=(8, 5))
@@ -139,10 +160,7 @@ def plot_price_distribution(df: pd.DataFrame) -> None:
     plt.xlabel("Price (₹)")
     plt.ylabel("Number of Properties")
     plt.legend()
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/02_price_histogram.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/02_price_histogram.png")
+    save_plot("02_price_histogram.png")
 
 def plot_area_vs_price(df: pd.DataFrame) -> None:
     plt.figure(figsize=(8, 5.5))
@@ -150,19 +168,13 @@ def plot_area_vs_price(df: pd.DataFrame) -> None:
         data=df, x="Area", y="Price", hue="Property_Type",
         palette=PALETTE[:3], alpha=0.75, s=55, edgecolor="white"
     )
-    z = np.polyfit(df["Area"], df["Price"], 1)
-    p = np.poly1d(z)
-    x_line = np.linspace(df["Area"].min(), df["Area"].max(), 100)
-    plt.plot(x_line, p(x_line), color="black", linestyle="--", linewidth=1.5, label="Trend Line")
+    add_linear_trend(df["Area"], df["Price"], color="black")
 
     plt.title("Area vs Price Relationship", fontsize=12, fontweight="bold")
     plt.xlabel("Area (sq.ft)")
     plt.ylabel("Price (₹)")
     plt.legend(title="Property Type")
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/03_area_vs_price_scatter.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/03_area_vs_price_scatter.png")
+    save_plot("03_area_vs_price_scatter.png")
 
 def plot_boxplot_by_location(df: pd.DataFrame) -> None:
     plt.figure(figsize=(8, 5.5))
@@ -172,10 +184,7 @@ def plot_boxplot_by_location(df: pd.DataFrame) -> None:
     plt.title("Price Distribution by Location", fontsize=12, fontweight="bold")
     plt.xlabel("Location")
     plt.ylabel("Price (₹)")
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/04_boxplot_by_location.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/04_boxplot_by_location.png")
+    save_plot("04_boxplot_by_location.png")
 
 def plot_feature_importance(corr: pd.DataFrame) -> None:
     price_corr = corr["Price"].drop("Price").sort_values()
@@ -191,10 +200,7 @@ def plot_feature_importance(corr: pd.DataFrame) -> None:
     plt.title("Feature Importance — Correlation with Price", fontsize=12, fontweight="bold")
     plt.xlabel("Correlation Coefficient")
     plt.axvline(0, color="black", linewidth=0.8)
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/05_feature_importance.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/05_feature_importance.png")
+    save_plot("05_feature_importance.png")
 
 def plot_avg_price_by_bedrooms(df: pd.DataFrame) -> None:
     summary = df.groupby("Bedrooms")["Price"].mean().round(0)
@@ -206,10 +212,7 @@ def plot_avg_price_by_bedrooms(df: pd.DataFrame) -> None:
     plt.title("Average Price by Bedroom Count", fontsize=12, fontweight="bold")
     plt.xlabel("Number of Bedrooms")
     plt.ylabel("Average Price (₹)")
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/06_avg_price_by_bedrooms.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/06_avg_price_by_bedrooms.png")
+    save_plot("06_avg_price_by_bedrooms.png")
 
 def plot_property_type_pie(df: pd.DataFrame) -> None:
     counts = df["Property_Type"].value_counts()
@@ -222,27 +225,18 @@ def plot_property_type_pie(df: pd.DataFrame) -> None:
         textprops={"fontsize": 10}
     )
     plt.title("Property Type Distribution", fontsize=12, fontweight="bold")
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/07_property_type_pie.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/07_property_type_pie.png")
+    save_plot("07_property_type_pie.png")
 
 def plot_age_vs_price(df: pd.DataFrame) -> None:
     """Scatter plot exploring relationship between property age and price."""
     plt.figure(figsize=(8, 5.5))
     sns.scatterplot(data=df, x="Age", y="Price", color=ACCENT_COLOR, alpha=0.6, s=50)
-    z = np.polyfit(df["Age"], df["Price"], 1)
-    p = np.poly1d(z)
-    x_line = np.linspace(df["Age"].min(), df["Age"].max(), 100)
-    plt.plot(x_line, p(x_line), color="#E76F51", linestyle="--", linewidth=2, label="Trend Line")
+    add_linear_trend(df["Age"], df["Price"], color="#E76F51")
     plt.title("Property Age vs Price", fontsize=12, fontweight="bold")
     plt.xlabel("Age (years)")
     plt.ylabel("Price (₹)")
     plt.legend()
-    plt.tight_layout()
-    plt.savefig(f"{VISUALS_DIR}/08_age_vs_price.png")
-    plt.close()
-    print(f"[SAVED] {VISUALS_DIR}/08_age_vs_price.png")
+    save_plot("08_age_vs_price.png")
 
 def generate_all_visuals(df: pd.DataFrame, corr: pd.DataFrame) -> None:
     """Runs all visualization functions in sequence."""
@@ -259,7 +253,7 @@ def generate_all_visuals(df: pd.DataFrame, corr: pd.DataFrame) -> None:
 def generate_insights(df: pd.DataFrame, corr: pd.DataFrame,
                        location_summary: pd.DataFrame,
                        type_summary: pd.DataFrame) -> dict:
-    price_corr = corr["Price"].drop("Price").sort_values(ascending=False)
+    price_corr = get_price_correlations(corr)
 
     insights = {
         "top_price_driver":     price_corr.index[0],
@@ -291,10 +285,26 @@ def generate_insights(df: pd.DataFrame, corr: pd.DataFrame,
 
     return insights
 
+
+def run_analysis(path: str = DATA_PATH, generate_visuals: bool = False):
+    df_raw = load_data(path)
+    df = clean_data(df_raw)
+    stats_df = compute_statistics(df)
+    corr = compute_correlation(df)
+    location_summary = analyze_location(df)
+    type_summary = analyze_property_type(df)
+    bedroom_summary = analyze_bedroom_impact(df)
+    insights = generate_insights(df, corr, location_summary, type_summary)
+
+    if generate_visuals:
+        generate_all_visuals(df, corr)
+
+    return df, stats_df, corr, location_summary, type_summary, bedroom_summary, insights
+
+
 def generate_report(df, stats_df, corr, location_summary,
                      type_summary, bedroom_summary, insights) -> None:
-    report = 
-                         f"""# 🏠 House Price Analysis — Report
+    report = f"""# 🏠 House Price Analysis — Report
 
 ---
 
@@ -398,20 +408,7 @@ def main():
     print("  HOUSE PRICE ANALYSIS — Starting Pipeline")
     print("=" * 65)
 
-    df_raw = load_data()
-
-    df = clean_data(df_raw)
-
-    stats_df = compute_statistics(df)
-    corr = compute_correlation(df)
-
-    location_summary = analyze_location(df)
-    type_summary = analyze_property_type(df)
-    bedroom_summary = analyze_bedroom_impact(df)
-
-    generate_all_visuals(df, corr)
-
-    insights = generate_insights(df, corr, location_summary, type_summary)
+    df, stats_df, corr, location_summary, type_summary, bedroom_summary, insights = run_analysis(generate_visuals=True)
 
     generate_report(df, stats_df, corr, location_summary,
                      type_summary, bedroom_summary, insights)
